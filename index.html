@@ -111,18 +111,18 @@
         /* ── Botón settings ── */
         .btn-settings {
             background: none;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            padding: 7px 10px;
+            border: none;
+            padding: 4px;
             cursor: pointer;
-            font-size: 18px;
-            color: var(--text-sub);
-            transition: border-color 0.2s, background 0.2s;
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: color 0.2s, transform 0.3s;
             flex-shrink: 0;
             margin: 0;
             line-height: 1;
+            opacity: 0.7;
         }
-        .btn-settings:hover { border-color: var(--brand); background: var(--summary-bg); }
+        .btn-settings:hover { color: var(--brand); opacity: 1; transform: rotate(30deg); }
 
         /* ── Modal de configuración ── */
         .modal-overlay {
@@ -476,6 +476,8 @@
             </tr>
         </tfoot>
     </table>
+
+    <p id="txt-author" style="margin-top: 22px; text-align: center; font-size: 11.5px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 14px;"></p>
 </div>
 
 <script>
@@ -534,6 +536,7 @@ const TEXTS = {
         'general-sample':     'Muestreo General (Lote Suelto)',
         'print-header':       'REPORTE DE MUESTREO DE CALIDAD - C&S INDUSTRIES',
         'offline-msg':        '⚡ Modo sin conexión — La app funciona normalmente',
+        'author':             'Esta app fue elaborada por: <strong style="color:var(--text-sub)">Angel Perez</strong> · Quality Manager',
     },
     en: {
         'txt-subtitle':       'Variability Calculator',
@@ -575,6 +578,7 @@ const TEXTS = {
         'general-sample':     'General Sampling (Loose Lot)',
         'print-header':       'QUALITY SAMPLING REPORT - C&S INDUSTRIES',
         'offline-msg':        '⚡ Offline mode — App works normally',
+        'author':             'This app was developed by: <strong style="color:var(--text-sub)">Angel Perez</strong> · Quality Manager',
     }
 };
 
@@ -598,6 +602,7 @@ function applyTexts() {
         if (el) el.innerText = t(id);
     });
     document.getElementById('offlineIndicator').innerText = t('offline-msg');
+    document.getElementById('txt-author').innerHTML = t('author');
     document.documentElement.lang = currentLang;
     document.getElementById('btn-es').classList.toggle('active', currentLang === 'es');
     document.getElementById('btn-en').classList.toggle('active', currentLang === 'en');
