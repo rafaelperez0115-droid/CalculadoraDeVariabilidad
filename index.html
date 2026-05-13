@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C&S Industries - Calculadora de Variabilidad</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Calculadora de Muestreo Aleatorio Variable MIL-STD-105E para C&S Industries">
+    <meta name="theme-color" content="#003366">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="C&S Variabilidad">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; color: #333; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 650px; margin: auto; border-top: 8px solid #003366; }
+        h1 { color: #003366; margin-bottom: 2px; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        .subtitle { color: #003366; font-size: 16px; margin-bottom: 5px; font-weight: bold; }
+        .tech-subtitle { color: #666; font-size: 13px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-style: italic; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; }
+        .full-width { grid-column: span 2; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #555; }
+        input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; }
+
+        .button-group { display: flex; gap: 10px; }
+        button { flex: 1; color: white; border: none; padding: 15px; font-size: 15px; border-radius: 6px; cursor: pointer; margin: 20px 0; font-weight: bold; transition: 0.3s; }
+        .btn-generate { background-color: #003366; }
+        .btn-generate:hover { background-color: #00509e; }
+        .btn-print { background-color: #546e7a; display: none; }
+        .btn-print:hover { background-color: #37474f; }
+
+        /* Banner de instalación PWA */
+        #installBanner {
+            display: none;
+            background: linear-gradient(135deg, #003366, #00509e);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            animation: slideDown 0.4s ease;
+        }
+        #installBanner.show { display: flex; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        #installBanner span { font-size: 13px; flex: 1; }
+        #installBanner strong { display: block; font-size: 15px; }
+        .btn-install { background: white; color: #003366; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap; margin: 0; flex: 0; }
+        .btn-dismiss { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; margin: 0; flex: 0; }
+
+        .summary-box { background: #eef6ff; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; text-align: left; border-left: 5px solid #003366; }
+
+        .aseguramiento-box { background: #fff8e1; padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 5px solid #ffc107; font-size: 13px; display: none; text-align: left; }
+        .porcentaje-badge { float: right; font-size: 22px; font-weight: bold; color: #003366; margin-left: 10px; }
+        .aseguramiento-box strong { color: #795548; font-size: 14px; }
+
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-top: 5px; margin-right: 5px; }
+        .ac-badge { background: #e8f5e9; color: #2e7d32; }
+        .re-badge { background: #ffebee; color: #c62828; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; display: none; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 14px; }
+        th { background: #f8f9fa; color: #003366; }
+        .total-footer { background: #f1f1f1; font-weight: bold; }
+        .error { color: #d32f2f; font-size: 12px; font-weight: bold; margin-top: 10px; display: none; }
+
+        /* Indicador offline */
+        #offlineIndicator {
+            display: none;
+            background: #ff6f00;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            body { background-color: white; padding: 0; }
+            .container { box-shadow: none; border: none; max-width: 100%; }
+            .form-grid, .button-group, .subtitle, .tech-subtitle, label, input, select { display: none !important; }
+            button { display: none !important; }
+            #installBanner, #offlineIndicator { display: none !important; }
+            .summary-box, .aseguramiento-box { border: 1px solid #003366; display: block !important; margin-top: 10px; }
+            table { display: table !important; width: 100%; }
+            h1 { font-size: 26px; text-align: center; margin-bottom: 20px; }
+            .print-only { display: block !important; margin-bottom: 20px; text-align: center; font-weight: bold; border-bottom: 2px solid #003366; padding-bottom: 10px; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="print-only">REPORTE DE MUESTREO DE CALIDAD - C&S INDUSTRIES</div>
+
+    <!-- Banner instalación PWA -->
+    <div id="installBanner">
+        <span>
+            <strong>📲 Instalar App</strong>
+            Agregar a pantalla de inicio para usar sin internet
+        </span>
+        <button class="btn-install" id="btnInstall">Instalar</button>
+        <button class="btn-dismiss" id="btnDismiss">✕</button>
+    </div>
+
+    <!-- Indicador offline -->
+    <div id="offlineIndicator">⚡ Modo sin conexión — La app funciona normalmente</div>
+
+    <h1>C&S Industries</h1>
+    <p class="subtitle">Calculadora de Variabilidad</p>
+    <p class="tech-subtitle">Quality Dept. | Muestreo Aleatorio Variable MIL-STD-105E</p>
+
+    <div class="form-grid">
+        <div class="form-group full-width">
+            <label>Tamaño del Lote (Piezas):</label>
+            <input type="number" id="loteTotal" placeholder="Ej: 50000">
+        </div>
+        <div class="form-group">
+            <label>Nivel de Inspección:</label>
+            <select id="nivelInspeccion" onchange="actualizarNotaAseguramiento()">
+                <option value="I">Nivel I</option>
+                <option value="II" selected>Nivel II</option>
+                <option value="III">Nivel III</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Nivel AQL:</label>
+            <select id="aqlLevel" onchange="actualizarNotaAseguramiento()">
+                <option value="0.065">0.065</option>
+                <option value="0.65" selected>0.65</option>
+                <option value="1.0">1.0</option>
+                <option value="2.5">2.5</option>
+                <option value="4.0">4.0</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Total de Cajas en Lote:</label>
+            <input type="number" id="cajasFisicas" placeholder="Opcional">
+        </div>
+        <div class="form-group">
+            <label>Capacidad Máx. Caja:</label>
+            <input type="number" id="unidadesPorCaja" placeholder="Opcional">
+        </div>
+    </div>
+
+    <div id="aseguramientoNota" class="aseguramiento-box">
+        <div id="percVal" class="porcentaje-badge">0%</div>
+        <div id="percText"></div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn-generate" onclick="ejecutarAuditoria()">Generar Auditoría</button>
+        <button id="btnPrint" class="btn-print" onclick="window.print()">Imprimir Reporte</button>
+    </div>
+
+    <div id="errorMsg" class="error"></div>
+
+    <div id="resumen" class="summary-box">
+        <strong>Estrategia de Inspección:</strong><br>
+        • Tamaño de Lote: <span id="loteReporte">-</span> unidades.<br>
+        • Tamaño de Muestra (n): <span id="nMuestra" style="font-weight:bold">0</span><br>
+        • Letra Código: <span id="letraCodigo">-</span> | AQL: <span id="aqlVal">-</span><br>
+        <div class="status-badge ac-badge">Aceptar (Ac) con: ≤ <span id="acVal">0</span> defectuosos</div>
+        <div class="status-badge re-badge">Rechazar (Re) con: ≥ <span id="reVal">0</span> defectuosos</div>
+    </div>
+
+    <table id="tablaResultados">
+        <thead>
+            <tr>
+                <th>Caja Seleccionada</th>
+                <th>Cantidad a Inspeccionar (Random)</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+        <tfoot>
+            <tr class="total-footer">
+                <td>TOTAL FINAL A INSPECCIONAR</td>
+                <td id="sumaFinal">0</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    // ─── Registro del Service Worker ───────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registrado:', reg.scope))
+                .catch(err => console.log('SW error:', err));
+        });
+    }
+
+    // ─── Banner de instalación PWA ─────────────────────────────────────────────
+    let deferredPrompt;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const btnDismiss = document.getElementById('btnDismiss');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.classList.add('show');
+    });
+
+    btnInstall.addEventListener('click', async () => {
+        installBanner.classList.remove('show');
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('Resultado instalación:', outcome);
+            deferredPrompt = null;
+        }
+    });
+
+    btnDismiss.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installBanner.classList.remove('show');
+        console.log('App instalada correctamente');
+    });
+
+    // ─── Indicador offline ─────────────────────────────────────────────────────
+    function updateOnlineStatus() {
+        document.getElementById('offlineIndicator').style.display =
+            navigator.onLine ? 'none' : 'block';
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // ─── Lógica de la calculadora (sin cambios) ────────────────────────────────
+    const milStd = {
+        '2-8': {I:'A', II:'A', III:'B'}, '9-15': {I:'A', II:'B', III:'C'}, '16-25': {I:'B', II:'C', III:'D'},
+        '26-50': {I:'C', II:'D', III:'E'}, '51-90': {I:'C', II:'E', III:'F'}, '91-150': {I:'D', II:'F', III:'G'},
+        '151-280': {I:'E', II:'G', III:'H'}, '281-500': {I:'F', II:'H', III:'J'}, '501-1200': {I:'G', II:'J', III:'K'},
+        '1201-3200': {I:'H', II:'K', III:'L'}, '3201-10000': {I:'J', II:'L', III:'M'}, '10001-35000': {I:'K', II:'M', III:'N'},
+        '35001-150000': {I:'L', II:'N', III:'P'}, '150001-500000': {I:'M', II:'P', III:'Q'}, '500001-9999999': {I:'N', II:'Q', III:'R'}
+    };
+    const sizes = {'A':2,'B':3,'C':5,'D':8,'E':13,'F':20,'G':32,'H':50,'J':80,'K':125,'L':200,'M':315,'N':500,'P':800,'Q':1250,'R':2000};
+
+    function actualizarNotaAseguramiento() {
+        const aql = parseFloat(document.getElementById('aqlLevel').value);
+        const nivel = document.getElementById('nivelInspeccion').value;
+        const notaBox = document.getElementById('aseguramientoNota');
+        const percBadge = document.getElementById('percVal');
+        const percText = document.getElementById('percText');
+        let porcentaje = 0, confiabilidad = "";
+        if (nivel === "III") { porcentaje = aql <= 0.65 ? 99 : 98; confiabilidad = "MÁXIMA"; }
+        else if (nivel === "II") { porcentaje = aql <= 0.65 ? 95 : 92; confiabilidad = "ESTÁNDAR (Normal)"; }
+        else { porcentaje = aql <= 0.65 ? 85 : 80; confiabilidad = "REDUCIDA"; }
+        percBadge.innerText = porcentaje + "%";
+        percText.innerHTML = `<strong>Aseguramiento de Calidad: ${confiabilidad}</strong><br>
+                             Confianza estadística del plan para detectar lotes fuera de norma bajo AQL ${aql}.`;
+        notaBox.style.display = 'block';
+    }
+
+    function ejecutarAuditoria() {
+        const lote = parseInt(document.getElementById('loteTotal').value);
+        const capMaxInput = parseInt(document.getElementById('unidadesPorCaja').value) || 0;
+        let totalCajas = parseInt(document.getElementById('cajasFisicas').value) || 0;
+        const nivel = document.getElementById('nivelInspeccion').value;
+        const aql = parseFloat(document.getElementById('aqlLevel').value);
+        const errorDiv = document.getElementById('errorMsg');
+        errorDiv.style.display = 'none';
+        if (!lote || lote < 2) { alert("Ingrese un lote válido."); return; }
+        if (capMaxInput > 0 && totalCajas === 0) { totalCajas = Math.ceil(lote / capMaxInput); }
+        let letra = 'A';
+        for (const r in milStd) {
+            const [min, max] = r.split('-').map(Number);
+            if (lote >= min && lote <= max) { letra = milStd[r][nivel]; break; }
+        }
+        const n = sizes[letra];
+        let numCajasAudit;
+        if (totalCajas > 0) {
+            if (totalCajas < 10) { numCajasAudit = totalCajas; }
+            else { let maxPosible = Math.min(totalCajas, 20); numCajasAudit = Math.floor(Math.random() * (maxPosible - 10 + 1)) + 10; }
+        } else { numCajasAudit = 1; }
+        if (capMaxInput > 0 && (numCajasAudit * capMaxInput < n)) {
+            errorDiv.innerText = `⚠️ Muestra excede capacidad física de las cajas seleccionadas.`;
+            errorDiv.style.display = 'block'; return;
+        }
+        let distribucion = new Array(numCajasAudit).fill(numCajasAudit > 1 ? 1 : 0);
+        let remanente = numCajasAudit > 1 ? n - numCajasAudit : n;
+        let limitSafe = 0;
+        while (remanente > 0 && limitSafe < 20000) {
+            let index = Math.floor(Math.random() * numCajasAudit);
+            if (capMaxInput === 0 || distribucion[index] < capMaxInput) { distribucion[index]++; remanente--; }
+            limitSafe++;
+        }
+        let ac = Math.floor(n * (aql/100));
+        let re = ac + 1;
+        document.getElementById('loteReporte').innerText = lote.toLocaleString();
+        document.getElementById('nMuestra').innerText = n;
+        document.getElementById('letraCodigo').innerText = letra;
+        document.getElementById('aqlVal').innerText = aql;
+        document.getElementById('acVal').innerText = ac;
+        document.getElementById('reVal').innerText = re;
+        document.getElementById('sumaFinal').innerText = n;
+        document.getElementById('resumen').style.display = 'block';
+        document.getElementById('tablaResultados').style.display = 'table';
+        document.getElementById('btnPrint').style.display = 'inline-block';
+        const cuerpo = document.getElementById('cuerpoTabla');
+        cuerpo.innerHTML = '';
+        if (totalCajas > 0) {
+            let labels = [];
+            while(labels.length < numCajasAudit) { let rNum = Math.floor(Math.random() * totalCajas) + 1; if(!labels.includes(rNum)) labels.push(rNum); }
+            labels.sort((a,b) => a-b);
+            labels.forEach((c, i) => { cuerpo.innerHTML += `<tr><td>Caja / Pallet #${c}</td><td><strong>${distribucion[i]}</strong></td></tr>`; });
+        } else {
+            cuerpo.innerHTML = `<tr><td>Muestreo General (Lote Suelto)</td><td><strong>${n}</strong></td></tr>`;
+        }
+        actualizarNotaAseguramiento();
+    }
+</script>
+</body>
+</html>
