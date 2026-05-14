@@ -1,6 +1,6 @@
 // Service Worker - C&S Industries Calculadora de Variabilidad
 // Compatible con GitHub Pages en subcarpeta
-const CACHE_NAME = 'cs-variabilidad-v2';
+const CACHE_NAME = 'cs-variabilidad-v3';
 const BASE = self.location.pathname.replace('/sw.js', '');
 
 const ASSETS = [
