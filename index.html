@@ -63,7 +63,7 @@
             --toggle-off: #555;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
@@ -123,6 +123,9 @@
             opacity: 0.7;
         }
         .btn-settings:hover { color: var(--brand); opacity: 1; transform: rotate(30deg); }
+        .btn-settings:focus, .btn-settings:focus-visible { outline: none; box-shadow: none; }
+        .btn-settings:active { background: none; }
+        .btn-settings { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
 
         /* ── Modal de configuración ── */
         .modal-overlay {
@@ -531,7 +534,7 @@ const TEXTS = {
         'aql-max':            'MÁXIMA',
         'aql-std':            'ESTÁNDAR (Normal)',
         'aql-red':            'REDUCIDA',
-        'aql-text':           'Aseguramiento de Calidad',
+        'aql-text':           'Sensibilidad del Plan de Muestreo',
         'aql-conf':           'Confianza estadística del plan para detectar lotes fuera de norma bajo AQL',
         'general-sample':     'Muestreo General (Lote Suelto)',
         'print-header':       'REPORTE DE MUESTREO DE CALIDAD - C&S INDUSTRIES',
@@ -573,7 +576,7 @@ const TEXTS = {
         'aql-max':            'MAXIMUM',
         'aql-std':            'STANDARD (Normal)',
         'aql-red':            'REDUCED',
-        'aql-text':           'Quality Assurance',
+        'aql-text':           'Sampling Plan Sensitivity',
         'aql-conf':           'Statistical confidence of the plan to detect out-of-spec lots at AQL',
         'general-sample':     'General Sampling (Loose Lot)',
         'print-header':       'QUALITY SAMPLING REPORT - C&S INDUSTRIES',
