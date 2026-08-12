@@ -480,6 +480,7 @@
         <strong id="txt-strategy">Estrategia de Inspección:</strong><br>
         <span id="txt-lot-size">• Tamaño de Lote:</span> <span id="loteReporte">-</span> <span id="txt-units">unidades</span>.<br>
         <span id="txt-sample-size">• Tamaño de Muestra (n):</span> <span id="nMuestra" style="font-weight:bold">0</span><br>
+        <span id="txt-sample-pct">• % del Lote Inspeccionado:</span> <span id="pctLote" style="font-weight:bold">0%</span><br>
         <span id="txt-code-letter">• Letra Código:</span> <span id="letraCodigo">-</span> | AQL: <span id="aqlVal">-</span><br>
         <div class="status-badge ac-badge"><span id="txt-ac">Aceptar (Ac) con:</span> ≤ <span id="acVal">0</span> <span id="txt-defects-ac">defectuosos</span></div>
         <div class="status-badge re-badge"><span id="txt-re">Rechazar (Re) con:</span> ≥ <span id="reVal">0</span> <span id="txt-defects-re">defectuosos</span></div>
@@ -534,6 +535,7 @@ const TEXTS = {
         'txt-lot-size':       '• Tamaño de Lote:',
         'txt-units':          'unidades',
         'txt-sample-size':    '• Tamaño de Muestra (n):',
+        'txt-sample-pct':     '• % del Lote Inspeccionado:',
         'txt-code-letter':    '• Letra Código:',
         'txt-ac':             'Aceptar (Ac) con:',
         'txt-re':             'Rechazar (Re) con:',
@@ -576,6 +578,7 @@ const TEXTS = {
         'txt-lot-size':       '• Lot Size:',
         'txt-units':          'units',
         'txt-sample-size':    '• Sample Size (n):',
+        'txt-sample-pct':     '• % of Lot Inspected:',
         'txt-code-letter':    '• Code Letter:',
         'txt-ac':             'Accept (Ac) with:',
         'txt-re':             'Reject (Re) with:',
@@ -615,7 +618,7 @@ function applyTexts() {
     const ids = [
         'txt-subtitle','txt-techsub','txt-lote-label','txt-nivel-label',
         'txt-aql-label','txt-cajas-label','txt-cap-label','btnGenerar','btnPrint',
-        'txt-strategy','txt-lot-size','txt-units','txt-sample-size','txt-code-letter',
+        'txt-strategy','txt-lot-size','txt-units','txt-sample-size','txt-sample-pct','txt-code-letter',
         'txt-ac','txt-re','txt-defects-ac','txt-defects-re',
         'txt-col-box','txt-col-qty','txt-total-label',
         'txt-install-title','txt-install-desc','btnInstall',
@@ -776,6 +779,8 @@ function ejecutarAuditoria() {
 
     document.getElementById('loteReporte').innerText = lote.toLocaleString();
     document.getElementById('nMuestra').innerText = n;
+    const pctLote = (n / lote) * 100;
+    document.getElementById('pctLote').innerText = (pctLote < 1 ? pctLote.toFixed(2) : pctLote.toFixed(1)) + '%';
     document.getElementById('letraCodigo').innerText = letra;
     document.getElementById('aqlVal').innerText = aql;
     document.getElementById('acVal').innerText = ac;
